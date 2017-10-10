@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Xml.Linq;
+using System.Xml;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 using SDL2;
@@ -15,27 +15,26 @@ namespace retrorunner {
             cats.Init (640, 480);
             cats.LoadTileset ("data/gfx/blocks.json");
 
-	    // READ TMX MAP
-	    XDocument xDoc = XDocument.Load("data/maps/map.tmx");
-	    var xMap = xDoc.Element("map");
-	    int width = (int)xMap.Attribute("width");
-	    int height = (int)xMap.Attribute("height");
+	    // READ TMX MAP WITH XmlDocument
+	    XmlDocument doc = new XmlDocument();
+	    doc.Load("data/maps/map.tmx");
+	    XmlNode MapNode = doc.SelectSingleNode("/map");
+	    int width = int.Parse(MapNode.Attributes.GetNamedItem("width").Value);
+	    int height = int.Parse(MapNode.Attributes.GetNamedItem("height").Value);
             cats.SetupTileLayer (width, height, 32, 32);
-	    foreach(var e in xMap.Elements("layer")) {
-		Console.WriteLine("Name: " + (string)e.Attribute("name"));
-		var xData = e.Element("data");
-		int i = 0;
-		foreach(var el in xData.Elements("tile")) {
-		    var gid = (uint)el.Attribute("gid");
-		    var x = i % width;
-		    var y = i / width;
-		    if(gid > 0) {
-			cats.SetTile(x, y, "blocks", 0, gid == 1 ? 0 : 2);
-		    }
-		    i++;
+	    XmlNode DataNode = doc.SelectSingleNode("/map/layer/data");
+	    XmlNodeList TileNodeList = DataNode.SelectNodes("tile");
+	    int i = 0;
+	    foreach(XmlNode tile in TileNodeList) {
+		var gid = int.Parse(tile.Attributes.GetNamedItem("gid").Value);
+		var x = i % width;
+		var y = i / width;
+		if(gid > 0) {
+		    cats.SetTile(x, y, "blocks", 0, gid == 1 ? 0 : 2);
 		}
+		i++;
 	    }
-	    // END OF READ TMX MAP
+	    // END READ TMX MAP WITH XmlDocument
 
             float offset = 0;
 
