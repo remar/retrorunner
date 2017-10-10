@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Xml.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 using SDL2;
@@ -9,26 +10,32 @@ namespace retrorunner {
     public class RetroRunner {
         public static int Main() {
 	    Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
+
 	    Cats cats = new Cats ();
             cats.Init (640, 480);
             cats.LoadTileset ("data/gfx/blocks.json");
-            JObject map = JObject.Parse (File.ReadAllText ("data/maps/map.json"));
-            JArray layers = (JArray)map ["layers"];
-            JObject layer = (JObject)layers [0];
-            int width = (int)layer ["width"];
-            int height = (int)layer ["height"];
+
+	    // READ TMX MAP
+	    XDocument xDoc = XDocument.Load("data/maps/map.tmx");
+	    var xMap = xDoc.Element("map");
+	    int width = (int)xMap.Attribute("width");
+	    int height = (int)xMap.Attribute("height");
             cats.SetupTileLayer (width, height, 32, 32);
-            JArray data = (JArray)layer ["data"];
-            for(int y = 0;y < height;y++) {
-                for(int x = 0;x < width;x++) {
-                    int tile = (int)data [y * width + x];
-                    if(tile == 1) {
-                        cats.SetTile (x, y, "blocks", 0, 0);
-                    } else if(tile == 2) {
-                        cats.SetTile (x, y, "blocks", 0, 2);
-                    }
-                }
-            }
+	    foreach(var e in xMap.Elements("layer")) {
+		Console.WriteLine("Name: " + (string)e.Attribute("name"));
+		var xData = e.Element("data");
+		int i = 0;
+		foreach(var el in xData.Elements("tile")) {
+		    var gid = (uint)el.Attribute("gid");
+		    var x = i % width;
+		    var y = i / width;
+		    if(gid > 0) {
+			cats.SetTile(x, y, "blocks", 0, gid == 1 ? 0 : 2);
+		    }
+		    i++;
+		}
+	    }
+	    // END OF READ TMX MAP
 
             float offset = 0;
 
