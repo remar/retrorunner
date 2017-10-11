@@ -19,34 +19,19 @@ namespace retrorunner {
 
 	    Input input = new Input();
 
-	    Level level = new Level(cats);
+	    Game game = new Game();
+	    Level level = new Level(game, cats, input);
 	    level.LoadLevel("data/maps/map.tmx");
-            float offset = 0;
-
-            bool Running = true;
-            float dx = 0;
+	    game.SetScreen(level);
 
             uint LastTime = SDL.SDL_GetTicks ();
-            while(Running) {
+            while(!game.Quit) {
                 float delta = (SDL.SDL_GetTicks () - LastTime) / 1000f;
                 LastTime = SDL.SDL_GetTicks ();
 
 		input.GetInput();
 
-		if(input.Quit || input.ActionPressed(Input.Action.BACK)) {
-		    Running = false;
-		}
-
-		dx = 0;
-		if(input.ActionHeld(Input.Action.LEFT)) {
-		    dx += 1;
-		}
-		if(input.ActionHeld(Input.Action.RIGHT)) {
-		    dx -= 1;
-		}
-
-                offset += dx * delta * 500;
-		cats.SetScroll ((int)offset, 0);
+		game.Update(delta);
 
                 cats.Redraw (delta);
             }

@@ -2,12 +2,17 @@ using System.Xml;
 using cats;
 
 namespace retrorunner {
-    public class Level {
+    public class Level : Screen {
+	private Game game;
 	private Cats cats;
+	private Input input;
 	private Field field;
+	private float offset = 0;
 
-	public Level(Cats cats) {
+	public Level(Game game, Cats cats, Input input) {
+	    this.game = game;
 	    this.cats = cats;
+	    this.input = input;
 	}
 
 	public void LoadLevel(string file) {
@@ -32,6 +37,23 @@ namespace retrorunner {
 		}
 		i++;
 	    }
+	}
+
+	public void Update(float delta) {
+	    if(input.Quit || input.ActionPressed(Input.Action.BACK)) {
+		game.Quit = true;
+	    }
+
+	    float dx = 0;
+	    if(input.ActionHeld(Input.Action.LEFT)) {
+		dx += 1;
+	    }
+	    if(input.ActionHeld(Input.Action.RIGHT)) {
+		dx -= 1;
+	    }
+
+	    offset += dx * delta * 500;
+	    cats.SetScroll ((int)offset, 0);
 	}
     }
 }
