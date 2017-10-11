@@ -1,14 +1,16 @@
 SDL2 := /home/andreas/Projekt/cats/SDL2-CS/bin/Debug/SDL2-CS.dll
 CATS := /home/andreas/Projekt/cats/cats-cs/bin/Debug/cats-cs.dll
 JSON := /home/andreas/Projekt/cats/JSON.NET/Bin/net45/Newtonsoft.Json.dll
+
 # TARGET is either Debug or Release
 TARGET := Debug
 TARGET_DIR := ../bin/$(TARGET)
+EXE_NAME := RetroRunner.exe
+TARGET_EXE = $(TARGET_DIR)/$(EXE_NAME)
 
-RetroRunner.exe: RetroRunner.cs
-	dmcs -r:$(SDL2),$(CATS),$(JSON) *.cs
+$(TARGET_EXE): $(wildcard *.cs)
 	@mkdir -p $(TARGET_DIR)
-	@cp RetroRunner.exe $(TARGET_DIR)
+	dmcs -out:$(TARGET_EXE) -r:$(SDL2),$(CATS),$(JSON) *.cs
 
 copy: RetroRunner.exe
 	@echo Copying libs and data
@@ -19,4 +21,4 @@ copy: RetroRunner.exe
 	@cp -r ../data $(TARGET_DIR)
 
 clean:
-	@rm -f RetroRunner.exe
+	@rm -f $(TARGET_EXE)

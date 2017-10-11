@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Xml;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 using SDL2;
@@ -8,34 +7,19 @@ using cats;
 
 namespace retrorunner {
     public class RetroRunner {
+	public static int ScreenWidth = 640;
+	public static int ScreenHeight = 480;
+
         public static int Main() {
 	    Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
 
+
 	    Cats cats = new Cats ();
-            cats.Init (640, 480);
+            cats.Init (ScreenWidth, ScreenHeight);
             cats.LoadTileset ("data/gfx/blocks.json");
 
-	    // READ TMX MAP WITH XmlDocument
-	    XmlDocument doc = new XmlDocument();
-	    doc.Load("data/maps/map.tmx");
-	    XmlNode MapNode = doc.SelectSingleNode("/map");
-	    int width = int.Parse(MapNode.Attributes.GetNamedItem("width").Value);
-	    int height = int.Parse(MapNode.Attributes.GetNamedItem("height").Value);
-            cats.SetupTileLayer (width, height, 32, 32);
-	    XmlNode DataNode = doc.SelectSingleNode("/map/layer/data");
-	    XmlNodeList TileNodeList = DataNode.SelectNodes("tile");
-	    int i = 0;
-	    foreach(XmlNode tile in TileNodeList) {
-		var gid = int.Parse(tile.Attributes.GetNamedItem("gid").Value);
-		var x = i % width;
-		var y = i / width;
-		if(gid > 0) {
-		    cats.SetTile(x, y, "blocks", 0, gid == 1 ? 0 : 2);
-		}
-		i++;
-	    }
-	    // END READ TMX MAP WITH XmlDocument
-
+	    Level level = new Level(cats);
+	    level.LoadLevel("data/maps/map.tmx");
             float offset = 0;
 
             bool Running = true;
@@ -90,7 +74,7 @@ namespace retrorunner {
                     RightChecked = true;
                 }
                 offset += dx * delta * 500;
-				cats.SetScroll ((int)offset, 0);
+		cats.SetScroll ((int)offset, 0);
                 cats.Redraw (delta);
             }
 
