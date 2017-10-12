@@ -11,7 +11,7 @@ $(TARGET_EXE): $(wildcard *.cs)
 	@mkdir -p $(TARGET_DIR)
 	dmcs -out:$(TARGET_EXE) -r:$(SDL2),$(CATS) *.cs
 
-copy: RetroRunner.exe
+copy: $(TARGET_EXE)
 	@echo Copying libs and data
 	@cp $(SDL2) $(TARGET_DIR)
 	@cp $(SDL2).config $(TARGET_DIR)
