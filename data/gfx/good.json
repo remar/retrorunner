@@ -1,0 +1,48 @@
+{
+    "animations": {
+	"stand right": {
+	    "image": {
+		"path":"good.png",
+		"width":18,
+		"height":26
+	    },
+	    "looping": false,
+	    "frames": [
+		[0, 1000]
+	    ]
+	},
+	"stand left": {
+	    "image": {
+		"path":"good.png",
+		"width":18,
+		"height":26
+	    },
+	    "looping": false,
+	    "frames": [
+		[3, 1000]
+	    ]
+	},
+        "walk right": {
+            "image": {
+                 "path":"good.png",
+                 "width":18,
+                 "height":26
+             },
+             "looping": true,
+             "frames": [
+                 [1, 50], [2, 50], [1, 50], [0, 50]
+             ]
+        },
+        "walk left": {
+            "image": {
+                 "path":"good.png",
+                 "width":18,
+                 "height":26
+             },
+             "looping": true,
+             "frames": [
+                 [4, 50], [5, 50], [4, 50], [3, 50]
+             ]
+        }
+    }
+}
