@@ -16,6 +16,7 @@ namespace retrorunner {
 	    Cats cats = new Cats ();
             cats.Init (ScreenWidth, ScreenHeight);
             cats.LoadTileset ("data/gfx/blocks.json");
+	    cats.LoadSprite("data/gfx/good.json");
 
 	    Input input = new Input();
 

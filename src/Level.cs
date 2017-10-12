@@ -8,11 +8,15 @@ namespace retrorunner {
 	private Input input;
 	private Field field;
 	private float offset = 0;
+	private int goodId;
 
 	public Level(Game game, Cats cats, Input input) {
 	    this.game = game;
 	    this.cats = cats;
 	    this.input = input;
+	    goodId = cats.CreateSpriteInstance("good");
+	    cats.SetSpritePosition(goodId, 32, 480-32-25);
+	    cats.SetAnimation(goodId, "stand right");
 	}
 
 	public void LoadLevel(string file) {
@@ -45,6 +49,15 @@ namespace retrorunner {
 	    }
 
 	    float dx = 0;
+	    if(input.ActionPressed(Input.Action.LEFT)) {
+		cats.SetAnimation(goodId, "walk left");
+	    } else if(input.ActionPressed(Input.Action.RIGHT)) {
+		cats.SetAnimation(goodId, "walk right");
+	    }
+	    if(input.ActionReleased(Input.Action.LEFT) ||
+	       input.ActionReleased(Input.Action.RIGHT)) {
+		cats.SetAnimation(goodId, "stand right");
+	    }
 	    if(input.ActionHeld(Input.Action.LEFT)) {
 		dx += 1;
 	    }
@@ -52,7 +65,7 @@ namespace retrorunner {
 		dx -= 1;
 	    }
 
-	    offset += dx * delta * 500;
+	    offset += dx * delta * 200;
 	    cats.SetScroll ((int)offset, 0);
 	}
     }
